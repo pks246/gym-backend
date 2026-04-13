@@ -23,13 +23,30 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Backend API for the gym management system, built with NestJS and PostgreSQL.
 
 ## Project setup
 
 ```bash
 $ npm install
 ```
+
+Copy `.env.example` to `.env` and update the database values for your local Postgres instance.
+
+## Database configuration
+
+The app reads these environment variables on startup:
+
+- `DB_HOST`
+- `DB_PORT`
+- `DB_USER`
+- `DB_PASSWORD`
+- `DB_NAME`
+- `DB_SYNCHRONIZE`
+- `DB_LOGGING`
+- `DB_SSL`
+
+By default, Jest runs with TypeORM `manualInitialization` enabled so tests can bootstrap the Nest app without needing a live database connection.
 
 ## Compile and run the project
 
