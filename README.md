@@ -47,6 +47,20 @@ The app reads these environment variables on startup:
 - `DB_SSL`
 
 By default, Jest runs with TypeORM `manualInitialization` enabled so tests can bootstrap the Nest app without needing a live database connection.
+The app uses migrations for schema changes, so keep `DB_SYNCHRONIZE=false` and run the migration command after creating your database.
+
+## Database setup
+
+```bash
+# create or update the schema
+$ npm run migration:run
+```
+
+If you need to roll back the last migration:
+
+```bash
+$ npm run migration:revert
+```
 
 ## Compile and run the project
 
