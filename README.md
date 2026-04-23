@@ -32,6 +32,7 @@ $ npm install
 ```
 
 Copy `.env.example` to `.env` and update the database values for your local Postgres instance.
+On macOS Homebrew installs, the default local role is often your macOS username rather than `postgres`.
 
 ## Database configuration
 
