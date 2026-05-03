@@ -50,6 +50,21 @@ describe('AppController (e2e)', () => {
       .expect(400);
   });
 
+  it('/members (POST) should reject invalid member payloads', () => {
+    return request(app.getHttpServer())
+      .post('/members')
+      .send({
+        gymId: 0,
+        memberCode: 'member-1',
+        firstName: '',
+        lastName: '',
+        email: 'invalid-email',
+        joinedOn: 'not-a-date',
+        emergencyContacts: [{ name: '', relationship: '', phoneNumber: '' }],
+      })
+      .expect(400);
+  });
+
   afterEach(async () => {
     await app.close();
   });

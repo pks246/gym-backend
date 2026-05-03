@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { GymAmenity } from './gym-amenity.entity';
 import { GymOperatingHour } from './gym-operating-hour.entity';
+import { Member } from '../../members/entities/member.entity';
 
 @Entity({ name: 'gyms' })
 export class Gym {
@@ -48,6 +49,9 @@ export class Gym {
     eager: true,
   })
   operatingHours!: GymOperatingHour[];
+
+  @OneToMany(() => Member, (member) => member.gym)
+  members!: Member[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
