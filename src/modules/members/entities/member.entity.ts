@@ -8,7 +8,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Attendance } from '../../attendance/entities/attendance.entity';
 import { Gym } from '../../gyms/entities/gym.entity';
+import { Subscription } from '../../subscriptions/entities/subscription.entity';
 import { MemberEmergencyContact } from './member-emergency-contact.entity';
 
 @Entity({ name: 'members' })
@@ -55,6 +57,12 @@ export class Member {
     eager: true,
   })
   emergencyContacts!: MemberEmergencyContact[];
+
+  @OneToMany(() => Subscription, (subscription) => subscription.member)
+  subscriptions!: Subscription[];
+
+  @OneToMany(() => Attendance, (attendance) => attendance.member)
+  attendances!: Attendance[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;

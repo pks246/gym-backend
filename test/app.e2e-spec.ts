@@ -65,6 +65,31 @@ describe('AppController (e2e)', () => {
       .expect(400);
   });
 
+  it('/subscriptions (POST) should reject invalid subscription payloads', () => {
+    return request(app.getHttpServer())
+      .post('/subscriptions')
+      .send({
+        memberId: 0,
+        planId: 0,
+        status: 'unknown',
+        startDate: 'bad-date',
+        endDate: 'bad-date',
+      })
+      .expect(400);
+  });
+
+  it('/attendance (POST) should reject invalid attendance payloads', () => {
+    return request(app.getHttpServer())
+      .post('/attendance')
+      .send({
+        memberId: 0,
+        attendedOn: 'bad-date',
+        checkInAt: 'bad-date',
+        source: 'invalid-source',
+      })
+      .expect(400);
+  });
+
   afterEach(async () => {
     await app.close();
   });

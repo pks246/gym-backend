@@ -9,6 +9,7 @@ import {
 import { GymAmenity } from './gym-amenity.entity';
 import { GymOperatingHour } from './gym-operating-hour.entity';
 import { Member } from '../../members/entities/member.entity';
+import { SubscriptionPlan } from '../../subscriptions/entities/subscription-plan.entity';
 
 @Entity({ name: 'gyms' })
 export class Gym {
@@ -52,6 +53,9 @@ export class Gym {
 
   @OneToMany(() => Member, (member) => member.gym)
   members!: Member[];
+
+  @OneToMany(() => SubscriptionPlan, (plan) => plan.gym)
+  subscriptionPlans!: SubscriptionPlan[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;

@@ -1,6 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 import { Gym } from '../gyms/entities/gym.entity';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { Member } from './entities/member.entity';
@@ -25,6 +30,15 @@ export class MembersService {
       );
     }
 
+    if (
+      createMemberDto.dateOfBirth &&
+      createMemberDto.dateOfBirth > createMemberDto.joinedOn
+    ) {
+      throw new BadRequestException(
+        'Member date of birth must be before the joined date.',
+      );
+    }
+
     const member = this.membersRepository.create({
       gym,
       memberCode: createMemberDto.memberCode,
@@ -44,7 +58,13 @@ export class MembersService {
         })) ?? [],
     });
 
-    const savedMember = await this.membersRepository.save(member);
+    let savedMember: Member;
+
+    try {
+      savedMember = await this.membersRepository.save(member);
+    } catch (error) {
+      this.handleConstraintError(error, 'Member code already exists.');
+    }
 
     return this.normalizeMember(savedMember);
   }
@@ -69,10 +89,44 @@ export class MembersService {
 
   private normalizeMember(member: Member) {
     return {
-      ...member,
-      emergencyContacts: [...(member.emergencyContacts ?? [])].sort(
-        (left, right) => left.name.localeCompare(right.name),
-      ),
+      id: member.id,
+      gym: {
+        id: member.gym.id,
+        code: member.gym.code,
+        name: member.gym.name,
+        isActive: member.gym.isActive,
+      },
+      memberCode: member.memberCode,
+      firstName: member.firstName,
+      lastName: member.lastName,
+      email: member.email,
+      phoneNumber: member.phoneNumber,
+      dateOfBirth: member.dateOfBirth,
+      joinedOn: member.joinedOn,
+      status: member.status,
+      notes: member.notes,
+      emergencyContacts: [...(member.emergencyContacts ?? [])]
+        .sort((left, right) => left.name.localeCompare(right.name))
+        .map((contact) => ({
+          id: contact.id,
+          name: contact.name,
+          relationship: contact.relationship,
+          phoneNumber: contact.phoneNumber,
+        })),
+      createdAt: member.createdAt,
+      updatedAt: member.updatedAt,
     };
+  }
+
+  private handleConstraintError(error: unknown, message: string): never {
+    if (error instanceof QueryFailedError) {
+      const databaseError = error.driverError as { code?: string };
+
+      if (databaseError.code === '23505') {
+        throw new ConflictException(message);
+      }
+    }
+
+    throw error;
   }
 }

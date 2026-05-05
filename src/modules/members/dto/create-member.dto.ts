@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Type } from 'class-transformer';
 import {
   ArrayMaxSize,
@@ -58,6 +57,7 @@ export class CreateMemberDto {
   @IsOptional()
   @IsString()
   @MaxLength(30)
+  @Matches(/^(active|paused|inactive|cancelled)$/)
   status?: string;
 
   @IsOptional()
